@@ -74,6 +74,24 @@ def create_file(file_name):
         f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
         f_writer.writeheader()
 
+def create_file(file_name2):
+    # with - Менеджер контекста
+    with open(file_name2, "w", encoding='utf-8') as data:
+        f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
+        f_writer.writeheader()
+    res = read_file(file_name2)
+    for el in res:
+        if el["Телефон"] == str(lst[2]):
+            print("Такой телефон уже есть")
+            return
+
+    obj = {"Имя": lst[0], "Фамилия": lst[1], "Телефон": lst[2]}
+    res.append(obj)
+    with open(file_name2, "w", encoding='utf-8', newline='') as data:
+        f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
+        f_writer.writeheader()
+        f_writer.writerows(res)
+
 
 def read_file(file_name):
     with open(file_name, "r", encoding='utf-8') as data:
@@ -96,7 +114,32 @@ def write_file(file_name, lst):
         f_writer.writerows(res)
 
 
+def copy_file(file_name, file_name2, line_number):
+    line_number = int(input("Введите номер строки, которую хотите скопировать: "))
+    with open(file_name, 'r', encoding='utf-8', newline='') as data:
+        lines = data.readlines()
+        if line_number <= 1 or line_number > len(lines) - 1:
+            print('Некорректный номер строки')
+            return
+    with open(file_name2, "r", encoding='utf-8', newline='') as data:
+        res = data.readlines()
+        if str(lines[line_number - 1]) in res:
+            print("Такой телефон уже есть")
+            return
+        elif str(lines[0]) in res:
+            with open(file_name2, "a", encoding='utf-8', newline='') as data:
+                data.write(lines[line_number - 1])
+                print('Строка скопирована')
+                return
+                    
+        with open(file_name2, "a", encoding='utf-8', newline='') as data:
+            data.write(lines[0])
+            data.write(lines[line_number - 1])
+            print('Строка скопирована')
+
+
 file_name = 'phone.csv'
+file_name2 = 'phonebook.csv'
 
 
 def main():
@@ -113,6 +156,10 @@ def main():
                 print("Файл отсутствует. Создайте его")
                 continue
             print(*read_file(file_name))
+        elif command == 'c':
+            if not exists(file_name2):
+                create_file(file_name2, int)
+            copy_file(file_name, file_name2, int)
 
 
 main()
